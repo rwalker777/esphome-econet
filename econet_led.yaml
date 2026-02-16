@@ -11,7 +11,9 @@ light:
   - platform: esp32_rmt_led_strip
     id: status_led
     name: "Status LED"
-    pin: ${status_led_pin}
+    pin: 
+      number: ${status_led_pin}
+      allow_other_uses: true
     num_leds: ${number_leds}
     rgb_order: GRB
     chipset: WS2812
