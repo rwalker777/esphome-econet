@@ -14,7 +14,6 @@ light:
     num_leds: 1
     rgb_order: GRB
     chipset: WS2812
-    rmt_channel: 0
     internal: true
     effects:
       - pulse:
