@@ -1,6 +1,7 @@
 substitutions:
   status_led_pin: GPIO35
-  status_led_brightness: "50%"
+  status_led_brightness: "50%"'
+  number_leds: 4
   # ID for the microcontroller connected binary_sensor
   micro_connected_id: microcontroller_connected
   # ID for the alarm count sensor
@@ -11,7 +12,7 @@ light:
     id: status_led
     name: "Status LED"
     pin: ${status_led_pin}
-    num_leds: 1
+    num_leds: ${number_leds}
     rgb_order: GRB
     chipset: WS2812
     internal: true
