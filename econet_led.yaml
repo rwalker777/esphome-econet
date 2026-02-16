@@ -48,20 +48,20 @@ interval:
                 id: status_led
                 effect: "Error Flash"
           else:
-            - if:
-                condition:
-                  not:
-                    binary_sensor.is_on: ${micro_connected_id}
-                then:
-                  # 2. Microcontroller Disconnected -> Solid Purple
-                  - light.turn_on:
-                      id: status_led
-                      brightness: ${status_led_brightness}
-                      red: 80%
-                      green: 0%
-                      blue: 100%
-                      effect: "none"
-                else:
+            # - if:
+            #     condition:
+            #       not:
+            #         binary_sensor.is_on: ${micro_connected_id}
+            #     then:
+            #       # 2. Microcontroller Disconnected -> Solid Purple
+            #       - light.turn_on:
+            #           id: status_led
+            #           brightness: ${status_led_brightness}
+            #           red: 80%
+            #           green: 0%
+            #           blue: 100%
+            #           effect: "none"
+            #     else:
                   - if:
                       condition:
                         not:
