@@ -76,7 +76,7 @@ interval:
                            lambda: |-
                              for (auto *s : App.get_binary_sensors()) {
                                // FIX: Convert StringRef to std::string using .str()
-                               if (s->get_name().str().find("MCU Connected") != std::string::npos) {
+                               if (s->get_name().str().find("Microcontroller Connected") != std::string::npos) {
                                  return s->state;
                                }
                              }
