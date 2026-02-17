@@ -9,6 +9,7 @@ substitutions:
   # ID for the alarm count sensor
   alarm_id: alarm_count
 
+# This was tested on an AtomS3 and S3-lite
 light:
   - platform: esp32_rmt_led_strip
     id: status_led
