@@ -241,8 +241,3 @@ button:
       - delay: 1s
       - switch.turn_off: alhisclr
 binary_sensor:
-  - platform: econet
-    name: "Microcontroller Connected"
-    id: mcu_connected
-    entity_category: diagnostic
-    device_class: connectivity
