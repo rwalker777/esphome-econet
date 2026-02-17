@@ -4,8 +4,6 @@ substitutions:
   number_leds: 4
   rgb_ordering: GRB
   led_chipset: WS2812
-  # ID for the microcontroller connected binary_sensor
-  micro_connected_id: microcontroller_connected
   # ID for the alarm count sensor
   alarm_id: alarm_count
 
@@ -14,12 +12,10 @@ light:
   - platform: esp32_rmt_led_strip
     id: status_led
     name: "Status LED"
-    pin: 
-      number: ${status_led_pin}
-      allow_other_uses: true
-    num_leds: ${number_leds}
-    rgb_order: ${rgb_ordering}
-    chipset: ${led_chipset}
+    pin: ${status_led_pin}
+    num_leds: 1
+    rgb_order: GRB
+    chipset: WS2812
     internal: true
     effects:
       - pulse:
@@ -39,6 +35,21 @@ light:
               duration: 100ms
             - state: false
               duration: 100ms
+      - strobe:
+          name: "BluePurple"
+          colors:
+            - state: true
+              brightness: ${status_led_brightness}
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 1s
+            - state: true
+              brightness: ${status_led_brightness}
+              red: 80%
+              green: 0%
+              blue: 100%
+              duration: 1s
 
 interval:
   - interval: 1s
@@ -53,52 +64,78 @@ interval:
                 id: status_led
                 effect: "Error Flash"
           else:
-            # - if:
-            #     condition:
-            #       not:
-            #         binary_sensor.is_on: ${micro_connected_id}
-            #     then:
-            #       # 2. Microcontroller Disconnected -> Solid Purple
-            #       - light.turn_on:
-            #           id: status_led
-            #           brightness: ${status_led_brightness}
-            #           red: 80%
-            #           green: 0%
-            #           blue: 100%
-            #           effect: "none"
-            #     else:
+            - if:
+                condition:
+                  not:
+                    api.connected:
+                then:
+                  # API Disconnected. Check MCU.
                   - if:
                       condition:
-                        not:
-                          api.connected:
+                         not:
+                           lambda: |-
+                             for (auto *s : App.get_binary_sensors()) {
+                               // FIX: Convert StringRef to std::string using .str()
+                               if (s->get_name().str().find("MCU Connected") != std::string::npos) {
+                                 return s->state;
+                               }
+                             }
+                             return false; 
                       then:
-                        # 3. WiFi OK, MCU OK, No API -> Solid Blue
-                        - light.turn_on:
-                            id: status_led
-                            brightness: ${status_led_brightness}
-                            red: 0%
-                            green: 0%
-                            blue: 100%
-                            effect: "none"
+                         # 2. BOTH Disconnected -> Alternate Blue/Purple
+                         - light.turn_on:
+                             id: status_led
+                             effect: "BluePurple"
                       else:
-                        # 4. Connected + Alarm Count > 0 -> Solid Amber
-                        - if:
-                            condition:
-                              lambda: 'return id(${alarm_id}).state > 0;'
-                            then:
-                              - light.turn_on:
-                                  id: status_led
-                                  brightness: ${status_led_brightness}
-                                  red: 100%
-                                  green: 50%
-                                  blue: 0%
-                                  effect: "none"
-                            else:
-                              # 5. All Normal -> Breathing Green
-                              - light.turn_on:
-                                  id: status_led
-                                  brightness: ${status_led_brightness}
-                                  red: 0%
-                                  green: 100%
-                                  blue: 0%
-                                  effect: "Breathing"
+                         # 3. Only API Disconnected -> Solid Blue
+                         - light.turn_on:
+                             id: status_led
+                             brightness: ${status_led_brightness}
+                             red: 0%
+                             green: 0%
+                             blue: 100%
+                             effect: "none"
+                else:
+                  # API Connected. Check MCU.
+                  - if:
+                      condition:
+                         not:
+                           lambda: |-
+                             for (auto *s : App.get_binary_sensors()) {
+                               // FIX: Convert StringRef to std::string using .str()
+                               if (s->get_name().str().find("MCU Connected") != std::string::npos) {
+                                 return s->state;
+                               }
+                             }
+                             return false; 
+                      then:
+                         # 4. Only MCU Disconnected -> Solid Purple
+                         - light.turn_on:
+                             id: status_led
+                             brightness: ${status_led_brightness}
+                             red: 80%
+                             green: 0%
+                             blue: 100%
+                             effect: "none"
+                      else:
+                         # 5. Connected + Alarm Count > 0 -> Solid Amber
+                         - if:
+                             condition:
+                               lambda: 'return id(${alarm_id}).state > 0;'
+                             then:
+                               - light.turn_on:
+                                   id: status_led
+                                   brightness: ${status_led_brightness}
+                                   red: 100%
+                                   green: 50%
+                                   blue: 0%
+                                   effect: "none"
+                             else:
+                               # 6. All Normal -> Breathing Green
+                               - light.turn_on:
+                                   id: status_led
+                                   brightness: ${status_led_brightness}
+                                   red: 0%
+                                   green: 100%
+                                   blue: 0%
+                                   effect: "Breathing"
