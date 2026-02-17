@@ -1,6 +1,6 @@
 substitutions:
   status_led_pin: GPIO35
-  status_led_brightness: "50%"'
+  status_led_brightness: "50%"
   number_leds: 4
   rgb_ordering: GRB
   led_chipset: WS2812
@@ -13,9 +13,9 @@ light:
     id: status_led
     name: "Status LED"
     pin: ${status_led_pin}
-    num_leds: 1
-    rgb_order: GRB
-    chipset: WS2812
+    num_leds: ${number_leds}
+    rgb_order: ${rgb_ordering}
+    chipset: ${led_chipset}
     internal: true
     effects:
       - pulse:
