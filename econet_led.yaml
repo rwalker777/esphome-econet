@@ -15,7 +15,7 @@ light:
     name: "Status LED"
     pin: ${status_led_pin}
     num_leds: ${number_leds}
-    rgb_order: ${rgb_ordering}
+    channel_colors: ${rgb_ordering}
     chipset: ${led_chipset}
     internal: true
     effects:
